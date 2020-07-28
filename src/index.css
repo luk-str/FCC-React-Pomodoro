@@ -1,0 +1,30 @@
+body {
+  box-sizing: border-box;
+  text-align: center;
+  background-color: #333;
+  color: #fff;
+}
+
+.sessionSetup {
+  background: #ccc;
+  color: black;
+  padding: 20px;
+  width: 200px;
+  margin: 10px auto;
+}
+
+.brakeSetup {
+  background: lightcoral;
+  color: black;
+  padding: 20px;
+  width: 200px;
+  margin: 10px auto;
+}
+
+.counter {
+  background-color: blue;
+  padding: 50px;
+  width: 500px;
+  margin: 40px auto;
+  font-size: 2rem;
+}
