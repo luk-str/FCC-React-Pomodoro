@@ -20,6 +20,7 @@ class App extends React.Component {
     this.runTimer = this.runTimer.bind(this);
     this.changeLength = this.changeLength.bind(this);
     this.resetTimer = this.resetTimer.bind(this);
+    this.render = this.render.bind(this);
   }
 
   updateTimer() {
@@ -35,7 +36,7 @@ class App extends React.Component {
     }
 
     if (counter < 0) {
-      document.getElementById('beep').play();
+      document.getElementById("beep").play();
       this.setState({
         inSession: !this.state.inSession,
         sessionCounter: this.state.sessionLength,
@@ -55,6 +56,8 @@ class App extends React.Component {
   }
 
   resetTimer() {
+    document.getElementById("beep").pause();
+    document.getElementById("beep").currentTime = 0;
     clearInterval(this.state.counterId);
     this.setState({
       sessionLength: 1500,
@@ -93,7 +96,7 @@ class App extends React.Component {
   render() {
     return (
       <main>
-        <h1>Super Duper Pomodoro Timer</h1>
+        <h1 className="title">Super Duper Pomodoro Timer</h1>
 
         <SessionSetup
           sessionLength={this.state.sessionLength}
@@ -106,10 +109,19 @@ class App extends React.Component {
         <Counter
           sessionCounter={this.state.sessionCounter}
           breakCounter={this.state.breakCounter}
+          sessionLength={this.state.sessionLength}
+          breakLength={this.state.breakLength}
           inSession={this.state.inSession}
         />
-        <Controls runTimer={this.runTimer} resetTimer={this.resetTimer} />
-        <audio id="beep" src="https://ia802506.us.archive.org/4/items/looper38/looper40.mp3"></audio>
+        <Controls
+          runTimer={this.runTimer}
+          resetTimer={this.resetTimer}
+          timerIsRunning={this.state.timerIsRunning}
+        />
+        <audio
+          id="beep"
+          src="https://ia802506.us.archive.org/4/items/looper38/looper40.mp3"
+        ></audio>
       </main>
     );
   }
@@ -120,20 +132,13 @@ class App extends React.Component {
 class SessionSetup extends React.Component {
   render() {
     const sessionMinutes = `${~~(this.props.sessionLength / 60)}`;
-    const sessionSeconds = `${this.props.sessionLength % 60}`;
-
-    const sessionMinutesDisplay =
-      sessionMinutes > 9 ? sessionMinutes : `0${sessionMinutes}`;
-
-    const sessionSecondsDisplay =
-      sessionSeconds > 9 ? sessionSeconds : `0${sessionSeconds}`;
 
     return (
       <div className="sessionSetup">
         <div id="session-label">
           <h5>Session Length</h5>
         </div>
-        <div id="session-length">{`${sessionMinutesDisplay}:${sessionSecondsDisplay}`}</div>
+        <div id="session-length">{sessionMinutes}</div>
         <button
           id="session-increment"
           onClick={() => this.props.changeLength("session", "+")}
@@ -156,20 +161,13 @@ class SessionSetup extends React.Component {
 class BreakSetup extends React.Component {
   render() {
     const breakMinutes = `${~~(this.props.breakLength / 60)}`;
-    const breakSeconds = `${this.props.breakLength % 60}`;
-
-    const breakMinutesDisplay =
-      breakMinutes > 9 ? breakMinutes : `0${breakMinutes}`;
-
-    const breakSecondsDisplay =
-      breakSeconds > 9 ? breakSeconds : `0${breakSeconds}`;
 
     return (
       <div className="breakSetup">
         <div id="break-label">
           <h5>Break Length</h5>
         </div>
-        <div id="break-length">{`${breakMinutesDisplay}:${breakSecondsDisplay}`}</div>
+        <div id="break-length">{breakMinutes}</div>
         <button
           id="break-increment"
           onClick={() => this.props.changeLength("break", "+")}
@@ -205,12 +203,24 @@ class Counter extends React.Component {
     const breakSecondsDisplay =
       breakSeconds > 9 ? breakSeconds : `0${breakSeconds}`;
 
-    let counterClass = this.props.inSession
-      ? "counter inSession"
-      : "counter onBreak";
+    let percentageLeft =
+      (this.props.inSession
+        ? this.props.sessionCounter / this.props.sessionLength
+        : this.props.breakCounter / this.props.breakLength) * 100;
+
+    const inSessionStyle = {
+      background: `linear-gradient(-90deg, rgba(0, 30, 255, 1) ${percentageLeft}%, rgba(0, 0, 220, 1) ${percentageLeft}% )`,
+    };
+    const onBreakStyle = {
+      background: `linear-gradient(90deg, rgb(250, 250, 210) ${percentageLeft}%, rgb(220, 190, 210) ${percentageLeft}% )`,
+      color: "rgba(0, 0, 255, 1)",
+    };
 
     return (
-      <div className={counterClass}>
+      <div
+        className="counter"
+        style={this.props.inSession ? inSessionStyle : onBreakStyle}
+      >
         <div id="timer-label">
           <h2>{this.props.inSession ? "work it!" : "chillaaax..."}</h2>
         </div>
@@ -229,12 +239,12 @@ class Counter extends React.Component {
 class Controls extends React.Component {
   render() {
     return (
-      <div>
+      <div className="controls">
         <button id="start_stop" onClick={() => this.props.runTimer()}>
-          START/STOP
+          {this.props.timerIsRunning ? "■" : "⫸"}
         </button>
         <button id="reset" onClick={() => this.props.resetTimer()}>
-          RESET
+          reset
         </button>
       </div>
     );
