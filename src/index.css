@@ -13,7 +13,7 @@ body {
   margin: 10px auto;
 }
 
-.brakeSetup {
+.breakSetup {
   background: lightcoral;
   color: black;
   padding: 20px;
@@ -22,9 +22,17 @@ body {
 }
 
 .counter {
-  background-color: blue;
   padding: 50px;
   width: 500px;
   margin: 40px auto;
   font-size: 2rem;
+}
+
+.counter.inSession {
+  background-color: blue;
+}
+
+.counter.onBreak {
+  background-color: lightgoldenrodyellow;
+  color: blue;
 }

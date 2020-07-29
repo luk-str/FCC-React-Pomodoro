@@ -23,12 +23,28 @@ class App extends React.Component {
   }
 
   updateTimer() {
-    let counter = this.state.sessionCounter - 1;
-    this.setState({ sessionCounter: counter });
+    let counter = this.state.inSession
+      ? this.state.sessionCounter
+      : this.state.breakCounter;
+    counter--;
+
+    if (this.state.inSession) {
+      this.setState({ sessionCounter: counter });
+    } else {
+      this.setState({ breakCounter: counter });
+    }
+
+    if (counter < 0) {
+      this.setState({
+        inSession: !this.state.inSession,
+        sessionCounter: this.state.sessionLength,
+        breakCounter: this.state.breakLength,
+      });
+    }
   }
 
   runTimer() {
-    if (this.state.timerIsRunning === false) {
+    if (!this.state.timerIsRunning) {
       let count = setInterval(this.updateTimer, 1000);
       this.setState({ timerIsRunning: true, counterId: count });
     } else {
@@ -65,9 +81,11 @@ class App extends React.Component {
     type === "session"
       ? this.setState({
           sessionLength: currentLength + change,
+          sessionCounter: currentLength + change,
         })
       : this.setState({
           breakLength: currentLength + change,
+          breakCounter: currentLength + change,
         });
   }
 
@@ -146,7 +164,7 @@ class BreakSetup extends React.Component {
       breakSeconds > 9 ? breakSeconds : `0${breakSeconds}`;
 
     return (
-      <div className="brakeSetup">
+      <div className="breakSetup">
         <div id="break-label">
           <h5>Break Length</h5>
         </div>
@@ -186,16 +204,17 @@ class Counter extends React.Component {
     const breakSecondsDisplay =
       breakSeconds > 9 ? breakSeconds : `0${breakSeconds}`;
 
+    let counterClass = this.props.inSession
+      ? "counter inSession"
+      : "counter onBreak";
+
     return (
-      <div className="counter">
+      <div className={counterClass}>
         <div id="timer-label">
-          <h2>
-            {" "}
-            {this.props.inSession === true ? "work it!" : "chillaaax..."}
-          </h2>
+          <h2>{this.props.inSession ? "work it!" : "chillaaax..."}</h2>
         </div>
         <div id="time-left">
-          {this.props.inSession === true
+          {this.props.inSession
             ? `${sessionMinutesDisplay}:${sessionSecondsDisplay}`
             : `${breakMinutesDisplay}:${breakSecondsDisplay}`}
         </div>
