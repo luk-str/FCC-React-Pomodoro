@@ -35,6 +35,7 @@ class App extends React.Component {
     }
 
     if (counter < 0) {
+      document.getElementById('beep').play();
       this.setState({
         inSession: !this.state.inSession,
         sessionCounter: this.state.sessionLength,
@@ -108,7 +109,7 @@ class App extends React.Component {
           inSession={this.state.inSession}
         />
         <Controls runTimer={this.runTimer} resetTimer={this.resetTimer} />
-        <audio id="beep"></audio>
+        <audio id="beep" src="https://ia802506.us.archive.org/4/items/looper38/looper40.mp3"></audio>
       </main>
     );
   }
